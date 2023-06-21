@@ -92,13 +92,20 @@ class AppAuthController extends ResourceController {
       @Bind.path("refresh") String refreshToken) async {
     try {
       final id = AppUtils.getIdFromToken(refreshToken);
-      await _updateTokens(id, managedContext);
       final user = await managedContext.fetchObjectWithID<User>(id);
-      return Response.ok(
-        ResponsModel(
-            data: user?.backing.contents,
-            message: "Успешное обновление токенов"),
-      );
+
+      if (user?.refreshToken != refreshToken) {
+        return Response.unauthorized(
+            body: ResponsModel(message: "Token is not valid"));
+      } else {
+        await _updateTokens(id, managedContext);
+        final user = await managedContext.fetchObjectWithID<User>(id);
+        return Response.ok(
+          ResponsModel(
+              data: user?.backing.contents,
+              message: "Успешное обновление токенов"),
+        );
+      }
     } catch (error) {
       return Response.serverError(
           body: ResponsModel(message: error.toString()));
