@@ -1,7 +1,12 @@
 //отвечает за пользовательские данные, т.е.
 //обновление данных, получение и т.д.
 
+import 'dart:io';
+
+import 'package:auth/models/user.dart';
+import 'package:auth/utils/app_const.dart';
 import 'package:auth/utils/app_response.dart';
+import 'package:auth/utils/app_utils.dart';
 import 'package:conduit_core/conduit_core.dart';
 
 class AppUserController extends ResourceController {
@@ -10,11 +15,18 @@ class AppUserController extends ResourceController {
   AppUserController(this.managedContext);
 
   @Operation.get()
-  Future<Response> getProfile() async {
+  Future<Response> getProfile(
+      @Bind.header(HttpHeaders.authorizationHeader) String header) async {
     try {
-      return AppResponse.ok(message: "getProfile");
+      final id = AppUtils.getIdFromHeader(header);
+      final user = await managedContext.fetchObjectWithID<User>(id);
+      user?.removePropertiesFromBackingMap(
+          [AppConst.accessToken, AppConst.refreshToken]);
+      return AppResponse.ok(
+          message: "Успешное получение профиля", body: user?.backing.contents);
     } catch (error) {
-      return AppResponse.serverError(error);
+      return AppResponse.serverError(error,
+          message: "Ошибка получения профиля");
     }
   }
 
