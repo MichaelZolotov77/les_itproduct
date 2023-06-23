@@ -17,6 +17,12 @@ class AppResponse extends Response {
           error: error.toString(), message: message ?? error.message);
     }
 
+    if (error is AuthorizationParserException) {
+      return ResponsModel(
+          error: error.toString(),
+          message: message ?? "Ошибка парсера авторизации");
+    }
+
     return ResponsModel(
         error: error.toString(), message: message ?? "Неизвестная ошибка");
   }
