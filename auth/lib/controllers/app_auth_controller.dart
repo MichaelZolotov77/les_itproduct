@@ -1,5 +1,4 @@
 //отвечает за авторизацию, контроллер
-import 'dart:io';
 
 import 'package:auth/models/respons_model.dart';
 import 'package:auth/models/user.dart';
