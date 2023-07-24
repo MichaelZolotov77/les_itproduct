@@ -72,7 +72,6 @@ services:
       - DB_HOST=db_data
       - DB_PORT=6201
       - DB_NAME=postgres
-      - TIME=1
     depends_on:
       - db_data
     networks:
